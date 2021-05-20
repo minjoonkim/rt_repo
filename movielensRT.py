@@ -46,8 +46,10 @@ df.reset_index(drop=True, inplace=True)
 df = df.astype({"userID": int})
 
 # %%
-# get rid of ratings that take too long.
-# initial cut-off: 100 seconds (about 10% of data points lost)
+# data cleaning:
+# 1. get rid of ratings that take too long. initial cut-off: 100 seconds (about 10% of data points lost)
+# 2. add in 0.5 to all rt's with 0
 df100 = df[df.rt < 101]
+df100.loc[df100['rt'] == 0.0, 'rt'] = 0.5
 df100.to_csv('rt100.csv')
 # %%
