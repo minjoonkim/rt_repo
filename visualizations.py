@@ -14,6 +14,7 @@ from seaborn import palettes
 from sklearn import preprocessing
 
 # %%
+# read in csv, drop additional index (should have used index=False haha)
 df = pd.read_csv('rt100.csv')
 df.drop(df.columns[0], axis=1)
 
