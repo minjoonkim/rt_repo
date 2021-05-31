@@ -51,5 +51,5 @@ df = df.astype({"userID": int})
 # 2. add in 0.5 to all rt's with 0
 df100 = df[df.rt < 101]
 df100.loc[df100['rt'] == 0.0, 'rt'] = 0.5
-df100.to_csv('rt100.csv')
+df100.to_csv('rt100.csv', index=False)
 # %%
