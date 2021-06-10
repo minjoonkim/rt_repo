@@ -35,6 +35,8 @@ for uid in ids:
     idx = df[df['userID'] == uid].index.values.astype(int)[0]
 
     df.loc[df['userID'] == uid, 'rt_norm'] = x_scaled
+
+df.to_csv('rt100_norm.csv', index=False)
 # %%
 # get all ratings and sort ascending
 orig_ratings = df.rating.unique()

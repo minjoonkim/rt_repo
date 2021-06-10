@@ -14,9 +14,9 @@ import matplotlib.pyplot as plt
 
 # %%
 # read in csv to dataframe
-df = pd.read_csv('rt100.csv')
+df = pd.read_csv('rt100_norm.csv')
 # %%
 # separate numerical/categorical columns
-num_cols_df = df['rt']
+num_cols_df = df[['rt', 'rt_norm']]
 cat_cols_df = df[['itemID', 'userID', 'rating']]
 # %%
