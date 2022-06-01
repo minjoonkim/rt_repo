@@ -10,7 +10,7 @@ import scipy as sp
 import matplotlib as mpl
 import matplotlib.cm as cm 
 import matplotlib.pyplot as plt 
-%matplotlib inline 
+# %matplotlib inline 
 
 import pandas as pd
 import time 
