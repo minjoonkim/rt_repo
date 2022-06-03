@@ -1,6 +1,8 @@
 #####
 # the RT restart
-# rt + skip with "desktop" data and "mobile" data
+# creating original dataframe files with "desktop" data and "mobile" data
+# date: Jun 1st, 2022
+# author: minjoon
 
 #%%
 # import all libraries

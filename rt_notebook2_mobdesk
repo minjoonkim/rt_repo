@@ -1,0 +1,79 @@
+#####
+# mobile vs desktop rt data statistical comparison
+# date: Jun 3rd, 2022
+# author: minjoon
+
+#%%
+# import all libraries
+from pickletools import float8
+import pandas as pd
+import numpy as np
+import seaborn as sns
+
+# %%
+# read in dataframes
+desktop_orig = pd.read_csv('desktop_rt_data.csv')
+mobile_orig = pd.read_csv('mobile_rt_data.csv')
+
+# %%
+# cleaning part 1: weed out 'abusers'
+
+# groupby id, and get rt means for each individual
+desktop_rt = desktop_orig.groupby('id', as_index=False).mean()
+mobile_rt = mobile_orig.groupby('id', as_index=False).mean()
+
+# separate rt means only 
+desktop_rt_avgs = desktop_rt['rt']
+mobile_rt_avgs = mobile_rt['rt']
+
+# calculate mean and std deviation of everybody
+# desktop
+desktop_mean = desktop_rt_avgs.mean()
+desktop_std = desktop_rt_avgs.std()
+
+# mobile
+mobile_mean = mobile_rt_avgs.mean()
+mobile_std = mobile_rt_avgs.std()
+
+# %%
+# we want to keep everybody who is less than 1 std dev away from the mean. 
+desktop_std_away = abs((desktop_rt_avgs - desktop_mean) / desktop_std)
+desktop_std_away[desktop_std_away < 1].count()
+
+# %%
+# do the same for mobile
+mobile_std_away = abs((mobile_rt_avgs - mobile_mean) / mobile_std)
+mobile_std_away[mobile_std_away < 1].count()
+# %%
+# add in the ids to the groupby
+desktop_rt['std'] = desktop_std_away
+mobile_rt['std'] = mobile_std_away
+
+# desktop_rt['std'].astype(float)
+# mobile_rt['std'].astype(float)
+
+# %%
+# get ids that have over 1 std 
+desktop_ids = desktop_rt[desktop_rt['std'] > 1]
+mobile_ids = mobile_rt[mobile_rt['std'] > 1]
+
+print("desktop len: ", len(desktop_ids))
+print("mobile len:", len(mobile_ids) )
+# %%
+# exclude ids that are in desktop_ids and mobile_ids
+desktop_cleane = desktop_orig[~desktop_orig['id'].isin(desktop_ids['id'])]
+mobile_clean = mobile_orig[~mobile_orig['id'].isin(mobile_ids['id'])]
+
+desktop_cleane.reset_index(inplace=True, drop=True)
+mobile_clean.reset_index(inplace=True, drop=True)
+# %%
+# need to make both data entries the same:
+# if 'watched' == 'not', then change 'rating' to 'skip', drop 'watched' column
+
+# desktop_clean[desktop_clean.watched == 'not', 'rating'] = 'skip'
+
+desktop_cleane.loc[desktop_cleane.watched == 'not', 'rating'] = "skip"
+desktop_clean = desktop_cleane.drop('watched', axis=1)
+# %%
+# log & normalize response times for both datasets
+# normalizing needs to be done per individual
