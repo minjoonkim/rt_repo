@@ -72,8 +72,31 @@ mobile_clean.reset_index(inplace=True, drop=True)
 
 # desktop_clean[desktop_clean.watched == 'not', 'rating'] = 'skip'
 
-desktop_cleane.loc[desktop_cleane.watched == 'not', 'rating'] = "skip"
+desktop_cleane.loc[desktop_cleane['watched'] == 'not', 'rating'] = "skip"
 desktop_clean = desktop_cleane.drop('watched', axis=1)
+
+# change order of columns - rt to the very end 
+cols = desktop_clean.columns.tolist()
+cols = cols[:3] + cols[-1:] + cols[3:4]
+desktop_clean = desktop_clean[cols]
+
 # %%
-# log & normalize response times for both datasets
-# normalizing needs to be done per individual
+# need to log transform rts for the geometric mean 
+desktop_clean.loc[:, ['rt_log']] = np.log(desktop_clean['rt'])
+mobile_clean.loc[:, ['rt_log']] = np.log(mobile_clean['rt'])
+# %%
+# normalizing rts per individual
+for ids in desktop_clean['id'].unique():
+    dindv = desktop_clean[desktop_clean.id == ids]['rt_log']
+    desktop_clean.loc[desktop_clean['id'] == ids, ['rt_lognorm']] = (dindv - dindv.min()) / (dindv.max() - dindv.min())
+# %%
+# do the same for mobile data 
+for ids in mobile_clean['id'].unique():
+    mindv = mobile_clean[mobile_clean.id == ids]['rt_log']
+    mobile_clean.loc[mobile_clean['id'] == ids, ['rt_lognorm']] = (mindv - mindv.min()) / (mindv.max() - mindv.min())
+# %%
+# export workable data to csv
+desktop_clean.to_csv('desktop_rt_data_lognorm.csv', index=False)
+mobile_clean.to_csv('mobile_rt_data_lognorm.csv', index=False)
+
+# %%
